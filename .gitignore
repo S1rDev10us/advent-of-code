@@ -1,5 +1,7 @@
 .direnv
 
+input
+puzzle.md
 
 # Created by https://www.toptal.com/developers/gitignore/api/vim,rust,visualstudiocode,node
 # Edit at https://www.toptal.com/developers/gitignore?templates=vim,rust,visualstudiocode,node

@@ -27,6 +27,8 @@
           nodejs_22
           # Command runner
           just
+          # Get puzzles
+          aoc-cli
         ];
         shellHook = ''
           npm install
