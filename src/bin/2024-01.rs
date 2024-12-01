@@ -1,5 +1,5 @@
 use anyhow::Result;
-use clap::Parser;
+use std::collections::HashMap;
 
 fn sort<T>(list: Vec<T>) -> Vec<T>
 where
@@ -10,16 +10,7 @@ where
     lines
 }
 
-#[derive(Parser, Debug)]
-#[command(version, about)]
-struct Args {
-    #[arg(short)]
-    star_1: bool,
-}
-
 fn main() -> Result<()> {
-    let is_star_1 = Args::parse().star_1;
-
     let actual_input = include_str!("../../puzzles/2024/01/input");
     let test_input = "\
         3   4\n\
@@ -45,25 +36,33 @@ fn main() -> Result<()> {
         .map(|mut line| line.nth(1).unwrap().parse::<i32>().unwrap());
     // ["4", "3", ...]
 
-    if is_star_1 {
-        let sorted_lines_a = sort(lines_a.collect::<Vec<i32>>()).into_iter();
+    /////////////////////////////// Star 1
 
-        let mut sorted_lines_b = sort(lines_b.collect::<Vec<i32>>()).into_iter();
+    let sorted_lines_a = sort(lines_a.clone().collect::<Vec<i32>>()).into_iter();
 
-        let differences = sorted_lines_a.map(|val_a| {
-            let val_b = &sorted_lines_b.next().unwrap();
-            (val_a - *val_b).abs()
-        });
+    let mut sorted_lines_b = sort(lines_b.clone().collect::<Vec<i32>>()).into_iter();
 
-        let val = differences.sum::<i32>();
-        println!("{val}");
-    } else {
-        let similarities = lines_a.map(|line_a| {
-            line_a * lines_b.clone().filter(|line_b| line_b == &line_a).count() as i32
-        });
-        let val = similarities.sum::<i32>();
-        println!("{val}");
-    }
+    let differences = sorted_lines_a.map(|val_a| {
+        let val_b = &sorted_lines_b.next().unwrap();
+        (val_a - *val_b).abs()
+    });
+
+    let star_1_val = differences.sum::<i32>();
+    println!("{star_1_val}"); // 1388114
+    assert_eq!(1388114i32, star_1_val);
+
+    /////////////////////////////// Star 2
+
+    let mut similarity_values: HashMap<i32, usize> = HashMap::new();
+
+    let similarities = lines_a.map(|line_a| {
+        *(similarity_values.entry(line_a).or_insert(
+            line_a as usize * lines_b.clone().filter(|line_b| line_b == &line_a).count(),
+        ))
+    });
+    let star_2_val = similarities.sum::<usize>();
+    println!("{star_2_val}"); // 23529853
+    assert_eq!(23529853usize, star_2_val);
 
     Ok(())
 }
