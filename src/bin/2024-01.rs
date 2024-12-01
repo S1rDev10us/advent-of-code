@@ -54,10 +54,15 @@ fn main() -> Result<()> {
     /////////////////////////////// Star 2
 
     let mut similarity_values: HashMap<i32, usize> = HashMap::new();
+    let lines_b_collected = lines_b.collect::<Vec<i32>>();
 
     let similarities = lines_a.map(|line_a| {
         *(similarity_values.entry(line_a).or_insert(
-            line_a as usize * lines_b.clone().filter(|line_b| line_b == &line_a).count(),
+            line_a as usize
+                * lines_b_collected
+                    .iter()
+                    .filter(|line_b| line_b == &&line_a)
+                    .count(),
         ))
     });
     let star_2_val = similarities.sum::<usize>();
