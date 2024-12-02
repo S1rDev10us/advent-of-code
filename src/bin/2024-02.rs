@@ -1,4 +1,4 @@
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Copy, Clone)]
 enum ReportStatus {
     Rising,
     Falling,
@@ -43,43 +43,58 @@ fn main() {
     let report_status = reports
         .iter()
         .map(|report| {
-            report
-                .iter()
-                .fold(
-                    StateTracker {
-                        state: ReportStatus::Unset,
-                        prev: -1,
-                    },
-                    |state_tracker, current| {
-                        // dbg!(&state_tracker);
-                        if state_tracker.prev == -1 {
-                            StateTracker {
-                                state: ReportStatus::Unset,
-                                prev: *current,
+            for i_removed in 0..report.len() {
+                let state = report
+                    .iter()
+                    .enumerate()
+                    .fold(
+                        StateTracker {
+                            state: ReportStatus::Unset,
+                            prev: -1,
+                        },
+                        |state_tracker, (i, current)| {
+                            if i == i_removed {
+                                return state_tracker;
                             }
-                        } else {
-                            StateTracker {
-                                state: is_safe(state_tracker.state, state_tracker.prev, *current),
-                                prev: *current,
+                            // dbg!(&state_tracker);
+                            if state_tracker.prev == -1 {
+                                StateTracker {
+                                    prev: *current,
+                                    ..state_tracker
+                                }
+                            } else {
+                                StateTracker {
+                                    state: is_safe(
+                                        state_tracker.state,
+                                        state_tracker.prev,
+                                        *current,
+                                    ),
+                                    prev: *current,
+                                }
                             }
-                        }
-                    },
-                )
-                .state
+                        },
+                    )
+                    .state;
+                if state != ReportStatus::Unsafe {
+                    return state;
+                }
+            }
             // != CurrentState::Unsafe
+            ReportStatus::Unsafe
         })
         .filter(|report| *report != ReportStatus::Unset);
-    println!();
+    // println!();
 
     // dbg!(safe_reports.clone().collect::<Vec<&Vec<i32>>>());
-    dbg!(report_status.clone().collect::<Vec<ReportStatus>>());
+    // dbg!(report_status.clone().collect::<Vec<ReportStatus>>());
 
     let output_1 = report_status
         .filter(|report| *report != ReportStatus::Unsafe)
         .count();
 
     dbg!(output_1);
-    assert_eq!(if using_actual_input { 230 } else { 2 }, output_1);
+    // assert_eq!(if using_actual_input { 230 } else { 2 }, output_1);
+    assert_eq!(if using_actual_input { 301 } else { 4 }, output_1);
 }
 
 fn change_type(prev: i32, next: i32) -> ReportStatus {
