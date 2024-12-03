@@ -13,14 +13,14 @@
 
 ## 02
 
-| Pass         | Time elapsed                 | Performance |
-| ------------ | ---------------------------- | ----------- |
-| [:star: 1]() | 1 hour 4 minutes 36 seconds  | 1.6ms       |
-| [:star: 2]() | 1 hour 42 minutes 34 seconds | 1.1ms       |
+| Pass                                                                                                     | Time elapsed                 | Performance |
+| -------------------------------------------------------------------------------------------------------- | ---------------------------- | ----------- |
+| [:star: 1](https://github.com/S1rDev10us/advent-of-code/commit/d9adb7dd936ee4ee4d0b59aea187d3f64f41bb19) | 1 hour 4 minutes 36 seconds  | 1.6ms       |
+| [:star: 2](https://github.com/S1rDev10us/advent-of-code/commit/d1e3811ef2e4c24bd83eb0e0a4e4340bd5211a5d) | 1 hour 42 minutes 34 seconds | 1.1ms       |
 
 ## 03
 
-| Pass         | Time elapsed                      | Performance |
-| ------------ | --------------------------------- | ----------- |
-| [:star: 1]() | 20 minutes 50 seconds             | 2.4ms       |
-| [:star: 2]() | Unsure, programming non-continous | 4.8ms       |
+| Pass                                                                                                     | Time elapsed                      | Performance |
+| -------------------------------------------------------------------------------------------------------- | --------------------------------- | ----------- |
+| [:star: 1](https://github.com/S1rDev10us/advent-of-code/commit/54f8952d79fdb9d85a070bd26d93c140d9dc06a5) | 20 minutes 50 seconds             | 2.4ms       |
+| [:star: 2](https://github.com/S1rDev10us/advent-of-code/commit/085c64f8514409298fc53d3e28862080ffd73609) | Unsure, programming non-continous | 4.8ms       |
