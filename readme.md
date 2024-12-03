@@ -17,3 +17,10 @@
 | ------------ | ---------------------------- | ----------- |
 | [:star: 1]() | 1 hour 4 minutes 36 seconds  | 1.6ms       |
 | [:star: 2]() | 1 hour 42 minutes 34 seconds | 1.1ms       |
+
+## 03
+
+| Pass         | Time elapsed                      | Performance |
+| ------------ | --------------------------------- | ----------- |
+| [:star: 1]() | 20 minutes 50 seconds             | 2.4ms       |
+| [:star: 2]() | Unsure, programming non-continous | 4.8ms       |
