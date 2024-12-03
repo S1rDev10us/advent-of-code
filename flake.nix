@@ -21,6 +21,7 @@
         packages = with pkgs; [
           pkg-config
           lld
+          hyperfine
           # rust
           (rust-bin.fromRustupToolchainFile ./rust-toolchain.toml)
           # For commitlint
