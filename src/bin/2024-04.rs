@@ -1,7 +1,7 @@
 use advent_of_code::initialize_macro;
 
 fn main() {
-    let (input, is_star_2) = initialize_macro!(
+    let (input, _is_star_2, is_actual_input) = initialize_macro!(
         "\
         MMMSXXMASM\n\
         MSAMXMSMSA\n\
@@ -27,21 +27,70 @@ fn main() {
         .collect::<Vec<Vec<_>>>();
 
     let dirs = [(0, 1), (1, 0), (1, 1), (1, -1)];
-    let mut found_matches = 0;
+    let mut star_1_matches = 0;
 
     for dir in dirs {
         for (x, line) in lines.iter().enumerate() {
             for y in 0..line.len() {
                 if search_line(&grid, (x, y), dir) {
-                    found_matches += 1;
+                    star_1_matches += 1;
                 }
             }
         }
     }
-    let star_1_output = found_matches;
-    // assert_eq!(18, dbg!(star_1_output));
-    assert_eq!(2685, dbg!(star_1_output));
+    dbg!(star_1_matches);
+    if is_actual_input {
+        assert_eq!(2685, star_1_matches);
+    } else {
+        assert_eq!(18, star_1_matches);
+    }
+
+    let mut star_2_matches = 0;
+    for x in 1..lines.len() - 1 {
+        let line = lines[x];
+        for y in 1..line.len() - 1 {
+            if search_x(&grid, (x as isize, y as isize)) {
+                star_2_matches += 1;
+            }
+        }
+    }
+    dbg!(star_2_matches);
+    if is_actual_input {
+        assert_eq!(2048, star_2_matches);
+    } else {
+        assert_eq!(9, star_2_matches);
+    }
 }
+
+fn search_x(grid: &[Vec<char>], (x, y): (isize, isize)) -> bool {
+    if let Some('A') = get_tile(grid, x, y) {
+        let positions = [
+            get_tile(grid, x + 1, y + 1),
+            get_tile(grid, x - 1, y - 1),
+            get_tile(grid, x - 1, y + 1),
+            get_tile(grid, x + 1, y - 1),
+        ];
+        if positions.iter().any(|pos| pos.is_none()) {
+            return false;
+        }
+
+        if positions.iter().any(|pos| {
+            let u_pos = pos.unwrap();
+            u_pos != 'M' && u_pos != 'S'
+        }) {
+            return false;
+        }
+
+        // Positions on opposite diagonals are not equivalent
+        if positions[0] == positions[1] || positions[2] == positions[3] {
+            return false;
+        }
+
+        return true;
+    }
+    false
+}
+
 fn search_line(
     grid: &[Vec<char>],
     (x_start, y_start): (usize, usize),

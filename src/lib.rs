@@ -9,7 +9,7 @@ struct Args {
     star_2: bool,
 }
 
-pub fn initialize<'a>(actual_input: &'static str, test_input: &'a str) -> (&'a str, bool) {
+pub fn initialize<'a>(actual_input: &'static str, test_input: &'a str) -> (&'a str, bool, bool) {
     let args = Args::parse();
 
     let input = if args.actual_input {
@@ -18,7 +18,7 @@ pub fn initialize<'a>(actual_input: &'static str, test_input: &'a str) -> (&'a s
         test_input
     };
 
-    (input, args.star_2)
+    (input, args.star_2, args.actual_input)
 }
 
 #[macro_export]
