@@ -23,18 +23,20 @@ pub fn initialize<'a>(actual_input: &'static str, test_input: &'a str) -> (&'a s
 
 #[macro_export]
 macro_rules! initialize_macro {
-    ($test_input:expr) => {{
+    ($test_input:tt) => {{
+        use advent_of_code::initialize_macro;
+        initialize_macro!(env!("CARGO_BIN_NAME"), $test_input)
+    }};
+    ($path:expr, $test_input:tt) => {{
         use advent_of_code::initialize;
         initialize(
             include_str!(concat!(
                 env!("CARGO_MANIFEST_DIR"),
-                // "/puzzles/2024/",
                 "/puzzles/",
-                env!("CARGO_BIN_NAME"),
-                // stringify!($day),
+                $path,
                 "/input"
             )),
-            stringify!($test_input),
+            $test_input,
         )
     }};
 }
