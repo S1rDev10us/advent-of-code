@@ -1,7 +1,7 @@
 use advent_of_code::initialize_macro;
 
 fn main() {
-    let (input, _, is_actual_input) = initialize_macro!(
+    let (input, star_2, is_actual_input) = initialize_macro!(
         "2024/07",
         "\
         190: 10 19\n\
@@ -38,32 +38,45 @@ fn main() {
         .collect::<Vec<(u64, Vec<u64>)>>();
 
     // dbg!(&equations);
+    let mut operations = vec![|a: u64, b: u64| -> u64 { a + b }, |a: u64, b: u64| -> u64 {
+        if a == 0 {
+            b
+        } else {
+            a * b
+        }
+    }];
+    if star_2 {
+        operations.push(|a: u64, b: u64| -> u64 {
+            (a.to_string() + &b.to_string()).parse::<u64>().unwrap()
+        });
+    }
 
-    let output_1 = equations
+    let output = equations
         .iter()
-        .map(|(target, values)| (target, check_operations(target, 0, values)))
+        .map(|(target, values)| (target, check_operations(target, 0, values, &operations)))
         .filter(|(_, reached_target)| *reached_target)
         .map(|(target, _)| target)
         .sum::<u64>();
-    dbg!(output_1);
-    if is_actual_input {
-        assert_eq!(6083020304036, output_1);
-    } else {
-        assert_eq!(3749, output_1);
-    }
+    dbg!(output);
+
+    assert_eq!(
+        match (star_2, is_actual_input) {
+            (false, true) => 6083020304036,
+            (false, false) => 3749,
+
+            (true, true) => 59002246504791,
+            (true, false) => 11387,
+        },
+        output
+    );
 }
 
-fn check_operations(target: &u64, acc: u64, values: &[u64]) -> bool {
-    let operations = [
-        |a: u64, b: u64| -> u64 { a + b },
-        |a: u64, b: u64| -> u64 {
-            if a == 0 {
-                b
-            } else {
-                a * b
-            }
-        },
-    ];
+fn check_operations(
+    target: &u64,
+    acc: u64,
+    values: &[u64],
+    operations: &[fn(u64, u64) -> u64],
+) -> bool {
     if &acc > target {
         return false;
     }
@@ -73,5 +86,5 @@ fn check_operations(target: &u64, acc: u64, values: &[u64]) -> bool {
 
     operations
         .iter()
-        .any(|op| check_operations(target, op(acc, values[0]), &values[1..]))
+        .any(|op| check_operations(target, op(acc, values[0]), &values[1..], operations))
 }
