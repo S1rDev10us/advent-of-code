@@ -46,6 +46,8 @@ fn main() {
     }
 
     let mut star_2_matches = 0;
+
+    #[allow(clippy::needless_range_loop)]
     for x in 1..lines.len() - 1 {
         let line = lines[x];
         for y in 1..line.len() - 1 {

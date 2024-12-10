@@ -108,7 +108,7 @@ fn main() {
         "
     );
 
-    let mut map = Map(input
+    let map = Map(input
         .split('\n')
         .filter(|row| row.trim() != "")
         .map(|row| {
