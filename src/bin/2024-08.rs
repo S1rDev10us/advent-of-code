@@ -1,7 +1,7 @@
 use advent_of_code::{initialize_macro, to_grid, Grid};
 use std::fmt;
 use std::fmt::Display;
-use std::ops::{Add, Sub};
+use std::ops::{Add, Mul, Sub};
 
 enum Tile {
     Antenna(char),
@@ -79,32 +79,64 @@ fn main() {
             let signed_ant_2 = (antenna_2.1 .0 as isize, antenna_2.1 .1 as isize);
 
             let offset = sub::<isize>(signed_ant_1, signed_ant_2);
+            if !star_2 {
+                let pos_1 = add(signed_ant_1, offset);
 
-            let pos_1 = add(signed_ant_1, offset);
+                if grid.contains_signed_point(pos_1) {
+                    antenna_mask.set_signed_pos(pos_1, true);
+                }
 
-            if grid.contains_signed_point(pos_1) {
-                antenna_mask.set_signed_pos(pos_1, true);
-            }
+                let pos_2 = sub(signed_ant_2, offset);
 
-            let pos_2 = sub(signed_ant_2, offset);
-            if grid.contains_signed_point(pos_2) {
-                antenna_mask.set_signed_pos(pos_2, true);
+                if grid.contains_signed_point(pos_2) {
+                    antenna_mask.set_signed_pos(pos_2, true);
+                }
+            } else {
+                for i in 0.. {
+                    let pos = add(signed_ant_1, mul(offset, i));
+                    if grid.contains_signed_point(pos) {
+                        antenna_mask.set_signed_pos(pos, true);
+                    } else {
+                        break;
+                    }
+                }
+
+                for i in 0.. {
+                    let pos = sub(signed_ant_2, mul(offset, i));
+                    if grid.contains_signed_point(pos) {
+                        antenna_mask.set_signed_pos(pos, true);
+                    } else {
+                        break;
+                    }
+                }
             }
         }
     }
     println!("{}", &grid);
+    println!(
+        "{}",
+        format!("{}", &antenna_mask)
+            .replace("false", ".")
+            .replace("true", "#")
+    );
 
-    let output_1 = antenna_mask
+    let output = antenna_mask
         .iter()
         .flatten()
         .filter(|is_antenna| **is_antenna)
         .count();
-    dbg!(&output_1);
-    if is_actual_input {
-        // assert_eq!(4433, output_1);
-    } else {
-        assert_eq!(14, output_1);
-    }
+    dbg!(&output);
+
+    assert_eq!(
+        match (star_2, is_actual_input) {
+            (false, true) => 249,
+            (false, false) => 14,
+
+            (true, true) => 905,
+            (true, false) => 34,
+        },
+        output
+    );
 }
 fn add<T>(a: (T, T), b: (T, T)) -> (T, T)
 where
@@ -117,4 +149,10 @@ where
     T: Sub<T, Output = T>,
 {
     (a.0 - b.0, a.1 - b.1)
+}
+fn mul<T>(a: (T, T), b: T) -> (T, T)
+where
+    T: Mul<T, Output = T> + Copy,
+{
+    (a.0 * b, a.1 * b)
 }
