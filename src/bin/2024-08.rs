@@ -1,4 +1,4 @@
-use advent_of_code::{initialize_macro, to_grid, Grid};
+use advent_of_code::prelude::*;
 use std::fmt;
 use std::fmt::Display;
 use std::ops::{Add, Mul, Sub};
