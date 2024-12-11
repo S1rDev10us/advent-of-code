@@ -39,3 +39,5 @@ macro_rules! initialize_macro {
         )
     }};
 }
+
+pub use initialize_macro;
