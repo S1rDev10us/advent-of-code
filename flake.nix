@@ -26,10 +26,8 @@
           (rust-bin.fromRustupToolchainFile ./rust-toolchain.toml)
           # For commitlint
           nodejs_22
-          # Command runner
-          just
-          # Get puzzles
-          aoc-cli
+          # # Command runner
+          # just
         ];
         shellHook = ''
           npm install
