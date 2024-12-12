@@ -20,12 +20,6 @@ fn main() {
         .iter()
         .filter(|(&tile, _)| tile == 0)
         .map(|(_, pos)| {
-            let mut trail_mask = grid
-                .iter_2d()
-                .map(|row| row.iter().map(|_| false))
-                .collect::<Grid<_>>();
-            trail_mask.set_pos(pos, true);
-
             let mut heads = vec![(pos, 1)];
             for height in 0..9 {
                 let mut proposed_heads = vec![];
@@ -41,7 +35,6 @@ fn main() {
                             continue;
                         }
 
-                        trail_mask.set_pos(pos2, true);
                         proposed_heads.push((pos2, *no_heads));
                     }
                 }
@@ -59,11 +52,7 @@ fn main() {
             }
 
             if !star_2 {
-                trail_mask
-                    .iter()
-                    .filter(|&(&tile, _)| tile)
-                    .filter(|&(_, pos)| matches!(grid.get_pos(pos), Some(9)))
-                    .count()
+                heads.len()
             } else {
                 heads.iter().map(|(_, no_heads)| no_heads).sum()
             }
