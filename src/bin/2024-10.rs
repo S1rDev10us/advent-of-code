@@ -19,52 +19,54 @@ fn main() {
     let scores = grid
         .iter()
         .filter(|(&tile, _)| tile == 0)
-        .map(|(_, (x, y))| {
-            let mut expanded_area = true;
+        .map(|(_, pos)| {
             let mut trail_mask = grid
                 .iter_2d()
                 .map(|row| row.iter().map(|_| false))
                 .collect::<Grid<_>>();
-            trail_mask.set_pos((x, y), true);
+            trail_mask.set_pos(pos, true);
 
-            // Keep expanding area until exhausted search space
-            while expanded_area {
-                expanded_area = false;
-
-                // Potential optimization: only search next to the most recently found positions
-
-                // The heights and positions of all tiles connected to the trailhead
-                let connected_tiles = trail_mask
-                    .iter()
-                    .filter(|&(&tile, _)| tile)
-                    .map(|(_, pos)| (grid.get_pos(pos).unwrap(), pos))
-                    .collect::<Vec<_>>();
-
-                for (height, pos) in connected_tiles {
+            let mut heads = vec![(pos, 1)];
+            for height in 0..9 {
+                let mut proposed_heads = vec![];
+                for (pos, no_heads) in heads.iter() {
                     let adjacent_tiles = [(0, -1), (0, 1), (-1, 0), (1, 0)]
                         .iter()
                         .map(|offset| (offset.0 + pos.0 as isize, offset.1 + pos.1 as isize))
-                        .filter(|pos2| grid.contains_signed_point(*pos2))
+                        .filter(|pos| grid.contains_signed_point(*pos))
                         .map(|pos| (pos.0 as usize, pos.1 as usize))
                         .map(|pos| (grid.get_pos(pos).unwrap(), pos));
-                    for (height2, pos2) in adjacent_tiles {
-                        if *height2 != height + 1 {
-                            continue;
-                        }
-                        if *trail_mask.get_pos(pos2).unwrap() {
+                    for (&height2, pos2) in adjacent_tiles {
+                        if height2 != height + 1 {
                             continue;
                         }
 
-                        expanded_area = true;
                         trail_mask.set_pos(pos2, true);
+                        proposed_heads.push((pos2, *no_heads));
                     }
                 }
+                heads = proposed_heads;
+
+                // Merge identical heads
+                heads.sort_by_key(|head| head.0);
+                heads.dedup_by(|a, b| {
+                    if a.0 != b.0 {
+                        return false;
+                    }
+                    b.1 += a.1;
+                    true
+                })
             }
-            trail_mask
-                .iter()
-                .filter(|&(&tile, _)| tile)
-                .filter(|&(_, pos)| matches!(grid.get_pos(pos), Some(9)))
-                .count()
+
+            if !star_2 {
+                trail_mask
+                    .iter()
+                    .filter(|&(&tile, _)| tile)
+                    .filter(|&(_, pos)| matches!(grid.get_pos(pos), Some(9)))
+                    .count()
+            } else {
+                heads.iter().map(|(_, no_heads)| no_heads).sum()
+            }
         })
         .collect::<Vec<_>>();
 
@@ -73,9 +75,9 @@ fn main() {
         output,
         star_2,
         actual_input,
-        Some(36),  // star 1 test
-        Some(737), // star 1 actual
-        None,      // star 2 test
-        None,      // star 2 actual
+        Some(36),   // star 1 test
+        Some(737),  // star 1 actual
+        Some(81),   // star 2 test
+        Some(1619), // star 2 actual
     )
 }
