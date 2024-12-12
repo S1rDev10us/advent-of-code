@@ -45,7 +45,7 @@ fn main() {
     });
 
     let antennae = grid
-        .iter()
+        .iter_2d()
         .enumerate()
         .flat_map(|(y, row)| {
             row.iter()
@@ -122,8 +122,7 @@ fn main() {
 
     let output = antenna_mask
         .iter()
-        .flatten()
-        .filter(|is_antenna| **is_antenna)
+        .filter(|is_antenna| *is_antenna.0)
         .count();
     dbg!(&output);
 

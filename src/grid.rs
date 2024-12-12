@@ -1,6 +1,5 @@
 use std::fmt;
 use std::fmt::Display;
-use std::slice::Iter;
 
 pub fn to_grid<T>(input: &str, tile_mapper: impl Fn(char) -> T) -> Grid<T>
 where
@@ -62,9 +61,19 @@ where
         self.0[pos.1 as usize][pos.0 as usize] = tile;
         true
     }
-    pub fn iter(&self) -> Iter<'_, Vec<T>> {
+
+    /// Returns an iterator over every item in the Grid, with the position
+    pub fn iter(&self) -> impl Iterator<Item = (&T, (usize, usize))> {
+        self.0
+            .iter()
+            .enumerate()
+            .flat_map(|(y, row)| row.iter().enumerate().map(move |(x, val)| (val, (x, y))))
+    }
+    /// Returns an iterator over the rows
+    pub fn iter_2d(&self) -> impl Iterator<Item = &Vec<T>> {
         self.0.iter()
     }
+
     pub fn width(&self) -> usize {
         self.0[0].len()
     }
@@ -72,6 +81,32 @@ where
         self.0.len()
     }
 }
+
+impl<T, TIter> FromIterator<TIter> for Grid<T>
+where
+    T: Display,
+    TIter: IntoIterator<Item = T>,
+{
+    fn from_iter<I: IntoIterator<Item = TIter>>(iter: I) -> Self {
+        Grid::new(
+            iter.into_iter()
+                .map(|row| row.into_iter().collect::<Vec<_>>())
+                .collect::<Vec<_>>(),
+        )
+    }
+}
+impl<T> IntoIterator for Grid<T>
+where
+    T: Display,
+{
+    type Item = Vec<T>;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.into_iter()
+    }
+}
+
 impl<T> Display for Grid<T>
 where
     T: Display,
@@ -80,7 +115,8 @@ where
         write!(
             f,
             "{}",
-            self.iter()
+            self.0
+                .iter()
                 .map(|row| row
                     .iter()
                     .map(|tile| format!("{}", tile))
