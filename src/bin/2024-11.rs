@@ -1,4 +1,5 @@
 use advent_of_code::prelude::*;
+use rayon::prelude::*;
 
 type Num = u64;
 
@@ -10,27 +11,17 @@ fn main() {
         .map(|stone| stone.trim().parse::<Num>().unwrap())
         .collect::<Vec<_>>();
 
-    let iterations = 25;
+    let iterations = if !star_2 { 25 } else { 75 };
 
-    for _ in 0..iterations {
-        let mut proposed_nums = vec![];
+    for i in 0..iterations {
+        dbg!(i, stones.len());
 
-        for &stone in stones.iter() {
-            if stone == 0 {
-                proposed_nums.push(1);
-                continue;
-            }
-
-            let stone_str = stone.to_string();
-            if stone_str.len() % 2 == 0 {
-                proposed_nums.push(stone_str[0..stone_str.len() / 2].parse::<Num>().unwrap());
-                proposed_nums.push(stone_str[stone_str.len() / 2..].parse::<Num>().unwrap());
-                continue;
-            }
-            proposed_nums.push(stone * 2024);
-        }
-
-        stones = proposed_nums;
+        stones = stones
+            .chunks(1.max(stones.len() / 16))
+            .collect::<Vec<_>>()
+            .into_par_iter()
+            .flat_map(process_stones)
+            .collect();
     }
 
     let output = stones.len();
@@ -43,4 +34,26 @@ fn main() {
         None,         // star 2 test
         None,         // star 2 actual
     )
+}
+fn process_stones(stones: &[Num]) -> Vec<Num> {
+    // dbg!(stones.len());
+    let mut proposed_nums = vec![];
+
+    for &stone in stones.iter() {
+        if stone == 0 {
+            proposed_nums.push(1);
+            continue;
+        }
+
+        if stone.checked_ilog10().unwrap_or(1) % 2 == 1 {
+            let stone_str = stone.to_string();
+            proposed_nums.push(stone_str[0..stone_str.len() / 2].parse::<Num>().unwrap());
+            proposed_nums.push(stone_str[stone_str.len() / 2..].parse::<Num>().unwrap());
+            continue;
+        }
+        proposed_nums.push(stone * 2024);
+    }
+    dbg!(stones.len());
+
+    proposed_nums
 }
