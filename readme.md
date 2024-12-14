@@ -74,3 +74,10 @@
 | [:star: 1](https://github.com/S1rDev10us/advent-of-code/commit/40df07eca869cec8c7d79c7149eee9d77939d40d)           | 2 hours 25 minutes 59 seconds | 2.5ms              |
 | [:star: 2](https://github.com/S1rDev10us/advent-of-code/commit/b7b9135f63ba8356d393d3a31b1e366ef648cbd1)           | 2 hours 54 minutes 9 seconds  | 1.8ms              |
 | [optimised solution](https://github.com/S1rDev10us/advent-of-code/commit/420ec7b6a29ff87c2f6add8b4a8c921dd0e5d8aa) | ~+5 mins                      | 1.2ms (both stars) |
+
+## [11](https://github.com/S1rDev10us/advent-of-code/blob/main/src/bin/2024-11.rs)
+
+| Pass                                                             | Time elapsed                 | Performance |
+| ---------------------------------------------------------------- | ---------------------------- | ----------- |
+| [:star: 1](https://github.com/S1rDev10us/advent-of-code/commit/) | 15 minutes 19 seconds        | 5.5ms       |
+| [:star: 2](https://github.com/S1rDev10us/advent-of-code/commit/) | broken up over multiple days | 37.0ms      |
