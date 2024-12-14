@@ -28,6 +28,7 @@
           nodejs_22
           # # Command runner
           # just
+          samply
         ];
         shellHook = ''
           npm install
