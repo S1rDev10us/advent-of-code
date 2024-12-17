@@ -1,9 +1,7 @@
 use advent_of_code::prelude::*;
 use rayon::prelude::*;
-use std::fs;
 
 type Num = u64;
-const WORK_PATH: &str = "./workenv/2024/11";
 
 fn main() {
     let (input, star_2, actual_input) = initialize_macro!("2024/11", "125 17");
