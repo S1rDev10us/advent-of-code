@@ -27,15 +27,15 @@ fn main() {
                     let adjacent_tiles = [(0, -1), (0, 1), (-1, 0), (1, 0)]
                         .iter()
                         .map(|offset| (offset.0 + pos.0 as isize, offset.1 + pos.1 as isize))
-                        .filter(|pos| grid.contains_signed_point(*pos))
+                        .filter(|pos| grid.contains_signed_point((*pos).into()))
                         .map(|pos| (pos.0 as usize, pos.1 as usize))
-                        .map(|pos| (grid.get_pos(pos).unwrap(), pos));
+                        .map(|pos| (grid.get_pos(pos.into()).unwrap(), pos));
                     for (&height2, pos2) in adjacent_tiles {
                         if height2 != height + 1 {
                             continue;
                         }
 
-                        proposed_heads.push((pos2, *no_heads));
+                        proposed_heads.push((Position(pos2.0, pos2.1), *no_heads));
                     }
                 }
                 heads = proposed_heads;

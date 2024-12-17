@@ -1,6 +1,9 @@
+use crate::position::{Direction, Offset, Position};
 use std::fmt;
 use std::fmt::{Debug, Display};
 use std::str::FromStr;
+
+pub struct Grid<T>(Vec<Vec<T>>);
 
 fn inner_to_grid(input: &str) -> impl Iterator<Item: Iterator<Item = char>> + use<'_> {
     input
@@ -29,32 +32,30 @@ where
     to_grid(input, |tile| tile.to_string().parse::<T>().unwrap())
 }
 
-pub struct Grid<T>(Vec<Vec<T>>);
-
 impl<T> Grid<T> {
     pub const fn new(grid: Vec<Vec<T>>) -> Grid<T> {
         Grid(grid)
     }
 
-    pub fn contains_point(&self, pos: (usize, usize)) -> bool {
+    pub fn contains_point(&self, pos: Position<usize>) -> bool {
         pos.1 < self.0.len() && pos.0 < self.0[pos.1].len()
     }
-    pub fn contains_signed_point(&self, pos: (isize, isize)) -> bool {
-        pos.0 >= 0 && pos.1 >= 0 && self.contains_point((pos.0 as usize, pos.1 as usize))
+    pub fn contains_signed_point(&self, pos: Position<isize>) -> bool {
+        pos.0 >= 0 && pos.1 >= 0 && self.contains_point(Position(pos.0 as usize, pos.1 as usize))
     }
-    pub fn get_pos(&self, pos: (usize, usize)) -> Option<&T> {
+    pub fn get_pos(&self, pos: Position<usize>) -> Option<&T> {
         if !self.contains_point(pos) {
             return None;
         }
         Some(&self.0[pos.1][pos.0])
     }
-    pub fn get_signed_pos(&self, pos: (isize, isize)) -> Option<&T> {
+    pub fn get_signed_pos(&self, pos: Position<isize>) -> Option<&T> {
         if !self.contains_signed_point(pos) {
             return None;
         }
         Some(&self.0[pos.1 as usize][pos.0 as usize])
     }
-    pub fn set_pos(&mut self, pos: (usize, usize), tile: T) -> bool {
+    pub fn set_pos(&mut self, pos: Position<usize>, tile: T) -> bool {
         if !self.contains_point(pos) {
             return false;
         }
@@ -62,7 +63,7 @@ impl<T> Grid<T> {
         self.0[pos.1][pos.0] = tile;
         true
     }
-    pub fn set_signed_pos(&mut self, pos: (isize, isize), tile: T) -> bool {
+    pub fn set_signed_pos(&mut self, pos: Position<isize>, tile: T) -> bool {
         if !self.contains_signed_point(pos) {
             return false;
         }
@@ -72,11 +73,12 @@ impl<T> Grid<T> {
     }
 
     /// Returns an iterator over every item in the Grid, with the position
-    pub fn iter(&self) -> impl Iterator<Item = (&T, (usize, usize))> {
-        self.0
-            .iter()
-            .enumerate()
-            .flat_map(|(y, row)| row.iter().enumerate().map(move |(x, val)| (val, (x, y))))
+    pub fn iter(&self) -> impl Iterator<Item = (&T, Position<usize>)> {
+        self.0.iter().enumerate().flat_map(|(y, row)| {
+            row.iter()
+                .enumerate()
+                .map(move |(x, val)| (val, Position(x, y)))
+        })
     }
     /// Returns an iterator over the rows
     pub fn iter_2d(&self) -> impl Iterator<Item = &Vec<T>> {
@@ -90,27 +92,32 @@ impl<T> Grid<T> {
         self.0.len()
     }
 
-    pub fn adjacent(&self, pos: (usize, usize)) -> Vec<(&T, (usize, usize))> {
+    pub fn adjacent(&self, pos: Position<usize>) -> Vec<(&T, Direction, Position<usize>)> {
         let mut adjacent_positions = vec![];
-        for &offset in [(0, 1), (0, -1), (1, 0), (-1, 0)].iter() {
-            let new_pos = (pos.0 as isize + offset.0, pos.1 as isize + offset.1);
+        for dir in Direction::all_dirs().into_iter() {
+            let offset: Offset<_> = dir.into();
+            let new_pos = Position(
+                pos.0 as isize + offset.0 as isize,
+                pos.1 as isize + offset.1 as isize,
+            );
             if self.contains_signed_point(new_pos) {
                 adjacent_positions.push((
                     self.get_signed_pos(new_pos).unwrap(),
-                    (new_pos.0 as usize, new_pos.1 as usize),
+                    dir,
+                    Position(new_pos.0 as usize, new_pos.1 as usize),
                 ));
             }
         }
         adjacent_positions
     }
-    pub fn adjacent_diagonal(&self, pos: (usize, usize)) -> Vec<(&T, (usize, usize))> {
+    pub fn adjacent_diagonal(&self, pos: Position<usize>) -> Vec<(&T, (usize, usize))> {
         let mut adjacent_positions = vec![];
         for x_off in [-1, 0, 1].into_iter() {
             for y_off in [-1, 0, 1].into_iter() {
                 if x_off == 0 && y_off == 0 {
                     continue;
                 }
-                let new_pos = (pos.0 as isize + x_off, pos.1 as isize + y_off);
+                let new_pos = Position(pos.0 as isize + x_off, pos.1 as isize + y_off);
                 if self.contains_signed_point(new_pos) {
                     adjacent_positions.push((
                         self.get_signed_pos(new_pos).unwrap(),

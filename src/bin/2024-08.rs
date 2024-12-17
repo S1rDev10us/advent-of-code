@@ -1,7 +1,6 @@
 use advent_of_code::prelude::*;
 use std::fmt;
 use std::fmt::Display;
-use std::ops::{Add, Mul, Sub};
 
 enum Tile {
     Antenna(char),
@@ -75,25 +74,27 @@ fn main() {
                 continue;
             }
 
-            let signed_ant_1 = (antenna_1.1 .0 as isize, antenna_1.1 .1 as isize);
-            let signed_ant_2 = (antenna_2.1 .0 as isize, antenna_2.1 .1 as isize);
+            let signed_ant_1: Position<_> =
+                (antenna_1.1 .0 as isize, antenna_1.1 .1 as isize).into();
+            let signed_ant_2: Position<_> =
+                (antenna_2.1 .0 as isize, antenna_2.1 .1 as isize).into();
 
-            let offset = sub::<isize>(signed_ant_1, signed_ant_2);
+            let offset: Offset<_> = signed_ant_1 - signed_ant_2;
             if !star_2 {
-                let pos_1 = add(signed_ant_1, offset);
+                let pos_1 = offset + signed_ant_1;
 
                 if grid.contains_signed_point(pos_1) {
                     antenna_mask.set_signed_pos(pos_1, true);
                 }
 
-                let pos_2 = sub(signed_ant_2, offset);
+                let pos_2 = signed_ant_2 - offset;
 
                 if grid.contains_signed_point(pos_2) {
                     antenna_mask.set_signed_pos(pos_2, true);
                 }
             } else {
                 for i in 0.. {
-                    let pos = add(signed_ant_1, mul(offset, i));
+                    let pos = signed_ant_1 + (offset * i);
                     if grid.contains_signed_point(pos) {
                         antenna_mask.set_signed_pos(pos, true);
                     } else {
@@ -102,7 +103,7 @@ fn main() {
                 }
 
                 for i in 0.. {
-                    let pos = sub(signed_ant_2, mul(offset, i));
+                    let pos = signed_ant_2 - (offset * i);
                     if grid.contains_signed_point(pos) {
                         antenna_mask.set_signed_pos(pos, true);
                     } else {
@@ -136,22 +137,4 @@ fn main() {
         },
         output
     );
-}
-fn add<T>(a: (T, T), b: (T, T)) -> (T, T)
-where
-    T: Add<T, Output = T>,
-{
-    (a.0 + b.0, a.1 + b.1)
-}
-fn sub<T>(a: (T, T), b: (T, T)) -> (T, T)
-where
-    T: Sub<T, Output = T>,
-{
-    (a.0 - b.0, a.1 - b.1)
-}
-fn mul<T>(a: (T, T), b: T) -> (T, T)
-where
-    T: Mul<T, Output = T> + Copy,
-{
-    (a.0 * b, a.1 * b)
 }
