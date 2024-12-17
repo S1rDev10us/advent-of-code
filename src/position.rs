@@ -133,6 +133,20 @@ impl Direction {
             Direction::Left,
         ]
     }
+    pub fn rotate_right(&self) -> Direction {
+        match self {
+            Direction::Up => Direction::Right,
+            Direction::Right => Direction::Down,
+            Direction::Down => Direction::Left,
+            Direction::Left => Direction::Up,
+        }
+    }
+    pub fn is_vertical(&self) -> bool {
+        matches!(self, Direction::Up | Direction::Down)
+    }
+    pub fn is_horizontal(&self) -> bool {
+        !self.is_vertical()
+    }
 }
 
 impl From<Direction> for Offset<i8> {
