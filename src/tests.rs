@@ -9,11 +9,11 @@ macro_rules! test_bin {
                 for is_actual in [false, true] {
                     let is_debug = cfg!(debug_assertions);
                     let mut build_command = Command::new("cargo");
-                    let mut build_command = build_command.args(["build", "--bin", file_name]);
+                    build_command.args(["build", "--bin", file_name]);
                     if !is_debug {
-                        build_command = build_command.arg("--release");
+                        build_command.arg("--release");
                     }
-                    build_command = build_command
+                    build_command
                         .stdin(Stdio::null())
                         .stdout(Stdio::null())
                         .stderr(Stdio::null());
@@ -25,7 +25,6 @@ macro_rules! test_bin {
                             + "/"
                             + file_name,
                     );
-                    let mut command = &mut command;
 
                     let mut args = vec![];
                     if star_2 {
@@ -34,7 +33,7 @@ macro_rules! test_bin {
                     if is_actual {
                         args.push("-a");
                     }
-                    command = command.args(&args);
+                    command.args(&args);
                     let output = command.output();
                     if output.is_err() {
                         panic!("Binary {} failed with args '{}'", file_name, args.join(" "))
