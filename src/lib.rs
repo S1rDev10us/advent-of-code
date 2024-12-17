@@ -3,6 +3,8 @@ pub mod grid;
 pub mod input;
 pub mod merge;
 pub mod results;
+#[cfg(test)]
+pub mod tests;
 pub mod prelude {
     pub use crate::dbg::display;
     pub use crate::grid::*;
