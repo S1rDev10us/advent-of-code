@@ -6,6 +6,29 @@ pub struct Position<T>(pub T, pub T);
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
 pub struct Offset<T>(pub T, pub T);
 
+impl<T> Offset<T> {
+    pub fn into_type<T2>(self) -> Option<Offset<T2>>
+    where
+        T2: TryFrom<T>,
+    {
+        Some(Offset(
+            T2::try_from(self.0).ok()?,
+            T2::try_from(self.1).ok()?,
+        ))
+    }
+}
+impl<T> Position<T> {
+    pub fn into_type<T2>(self) -> Option<Position<T2>>
+    where
+        T2: TryFrom<T>,
+    {
+        Some(Position(
+            T2::try_from(self.0).ok()?,
+            T2::try_from(self.1).ok()?,
+        ))
+    }
+}
+
 impl<T> Add for Offset<T>
 where
     T: Add<T, Output = T>,
